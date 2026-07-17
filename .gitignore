@@ -8,3 +8,6 @@ __pycache__/
 
 # Local runtime state (do not commit per-machine state file)
 overflow_recorder_state.json
+
+# Claude Code local state
+.claude/
