@@ -8,7 +8,7 @@ would otherwise discard is preserved locally.
 Author: Gordon
 Version: 1.0.0
 License: MIT
-URL: https://github.com/gordon/obs-recorder
+URL: https://github.com/gordonxc/obs-recorder
 """
 
 import os
@@ -274,8 +274,8 @@ def script_description():
         "safety margin under YouTube's 12-hour cap. Set to a small "
         "value (e.g. 1) for testing.</p>"
         "<p><b>License:</b> MIT &middot; <b>URL:</b> "
-        "<a href='https://github.com/gordon/obs-recorder'>"
-        "github.com/gordon/obs-recorder</a></p>"
+        "<a href='https://github.com/gordonxc/obs-recorder'>"
+        "github.com/gordonxc/obs-recorder</a></p>"
     ).format(ver=SCRIPT_VERSION)
 
 

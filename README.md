@@ -135,7 +135,7 @@ gives up rather than guessing wrong.
 - **Windows / Linux**: not yet verified by the author. The script uses
   only cross-platform OBS Python APIs (`obspython`), so it *should* work.
   If you hit issues, please file them at
-  https://github.com/gordon/obs-recorder/issues.
+  https://github.com/gordonxc/obs-recorder/issues.
 
 ## License
 
