@@ -1,0 +1,10 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# macOS
+.DS_Store
+
+# Local runtime state (do not commit per-machine state file)
+overflow_recorder_state.json
