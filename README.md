@@ -1,5 +1,7 @@
 # Overflow Recorder
 
+[English](README.md) | [繁體中文](README.zh-TW.md)
+
 An [OBS Studio](https://obsproject.com/) Python script that starts a local
 recording when your live stream nears **YouTube's 12-hour archive retention
 limit**, so the portion of the stream YouTube would otherwise discard is
