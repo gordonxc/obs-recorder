@@ -1,144 +1,105 @@
-# Overflow Recorder
+# Overflow Recorder（直播錄影備份腳本）
 
-[English](README.md) | [繁體中文](README.zh-TW.md)
+[English](README.en.md) | [繁體中文](README.md)
 
-An [OBS Studio](https://obsproject.com/) Python script that starts a local
-recording when your live stream nears **YouTube's 12-hour archive retention
-limit**, so the portion of the stream YouTube would otherwise discard is
-preserved locally.
+這是一個 [OBS Studio](https://obsproject.com/) 的 Python 腳本，會在你的直播接近 **YouTube 12 小時封存保留限制** 時自動開始本機錄影，把 YouTube 會捨棄掉的那段直播內容保存到本機。
 
-## Why
+## 為什麼需要
 
-YouTube Live's auto-generated archive caps at **12 hours**. If you stream
-longer than that, anything past 12h is silently lost on YouTube's side.
-Combine YouTube's archive (0–12h) with this script's local recording
-(11h55m+) and you have the full stream on disk for editing or re-upload.
+YouTube 直播的自動封存（VOD）上限是 **12 小時**。只要直播超過 12 小時，第 12 小時之後的內容會在 YouTube 端靜悄悄地遺失。把 YouTube 的封存（0–12 小時）和這個腳本的本機錄影（11 小時 55 分之後）拼起來，你就有一份完整的直播檔可用於剪輯或重新上傳。
 
-The script starts the local recording a few minutes *before* the 12h mark
-(default 11h55m, configurable) to avoid losing the boundary second.
+腳本會在 12 小時刻度之前幾分鐘（預設 11 小時 55 分，可調整）開始本機錄影，避免在分界秒數上漏掉內容。
 
-## Requirements
+## 需求
 
-- OBS Studio 30+ (Python scripting is built into OBS).
-- The OBS Python scripting engine enabled, pointed at a Python 3.11 install.
-  See **Python setup** below — this step varies by OS.
+- OBS Studio 30 以上版本（Python 腳本功能內建於 OBS）。
+- 已啟用 OBS Python 腳本引擎，並指向一份 Python 3.11 安裝。
+  各作業系統的設定方式請見下方 **Python 環境設定**。
 
-## Install
+## 安裝
 
-1. Download `overflow_recorder.py` (or clone this repo).
-2. In OBS: **Tools → Scripts**.
-3. On the **Scripts** tab, click **+** and choose `overflow_recorder.py`.
-4. Switch to the **Script Properties** tab (with the script selected) and
-   confirm:
-   - **Enabled** is checked.
-   - **Threshold (minutes)** is `715` (= 11h55m). Set to `1` for a quick
-     end-to-end test (see **Testing** below).
-5. Click the **Script Log** button to see what the script is doing.
+1. 下載 `overflow_recorder.py`（或 clone 這個 repo）。
+2. 在 OBS 中開啟 **工具（Tools）→ 指令碼（Scripts）**。
+3. 在 **指令碼（Scripts）** 分頁中按 **+**，選擇 `overflow_recorder.py`。
+4. 切換到 **指令碼屬性（Script Properties）** 分頁（先選取剛載入的腳本）並確認：
+   - **Enabled** 已勾選。
+   - **Threshold (minutes)** 是 `715`（= 11 小時 55 分）。要做快速完整測試請設為 `1`（見下方 **測試** 一節）。
+5. 按下 **Script Log** 按鈕可檢視腳本的執行訊息。
 
-## Python setup
+## Python 環境設定
 
-OBS Python scripts need a Python 3.11 interpreter that OBS can find. The
-config lives at **Tools → Settings → Advanced → Python** (or
-**Tools → Scripts → Python Settings** in some versions).
+OBS 的 Python 腳本需要一份 OBS 能找到的 Python 3.11 直譯器。設定位置在 **工具 → 設定 → 進階 → Python**（某些版本在 **工具 → 指令碼 → Python 設定**）。
 
 ### macOS
 
-OBS does not bundle Python. Install Python 3.11 and point OBS at it:
+OBS 不會附帶 Python。請安裝 Python 3.11 並把 OBS 指向它：
 
 ```sh
 brew install python@3.11
 ```
 
-Then set OBS's Python path to
-`/opt/homebrew/opt/python@3.11/Frameworks/Python.framework/Versions/3.11`
-(Apple Silicon) or
-`/usr/local/opt/python@3.11/Frameworks/Python.framework/Versions/3.11`
-(Intel). The directory must contain a `Python` executable inside `bin/`.
+然後把 OBS 的 Python 路徑設為
+`/opt/homebrew/opt/python@3.11/Frameworks/Python.framework/Versions/3.11`（Apple Silicon）或
+`/usr/local/opt/python@3.11/Frameworks/Python.framework/Versions/3.11`（Intel）。該目錄的 `bin/` 內必須包含 `Python` 執行檔。
 
 ### Windows
 
-Recent OBS versions on Windows bundle a Python interpreter. If **Python
-Settings** is grayed out or shows an error, install
-[Python 3.11](https://www.python.org/downloads/release/python-3110/) and
-point OBS at its install directory.
+較新版的 OBS for Windows 已附帶 Python 直譯器。若 **Python 設定** 呈灰色或顯示錯誤，請安裝
+[Python 3.11](https://www.python.org/downloads/release/python-3110/)，再把 OBS 指向其安裝目錄。
 
 ### Linux
 
-Use your distro's Python 3.11 (e.g. `python3.11` on Debian/Ubuntu). Set
-OBS's Python path to the directory containing `python3.11`.
+使用你發行版提供的 Python 3.11（例如 Debian/Ubuntu 上的 `python3.11`）。把 OBS 的 Python 路徑設為內含 `python3.11` 的目錄。
 
-## Configuration
+## 設定
 
-| Setting | Default | Description |
+| 設定項 | 預設值 | 說明 |
 |---|---|---|
-| Enabled | on | Master toggle. Turn off without unloading the script. |
-| Threshold (minutes) | 715 | Stream uptime at which to start a local recording. 715 = 11h55m. Set to `1` for testing. |
+| Enabled | 開啟 | 總開關。不必卸載腳本即可停用。 |
+| Threshold (minutes) | 715 | 何時（直播進行幾分鐘後）要開始本機錄影。715 = 11 小時 55 分。測試時設為 `1`。 |
 
-## Behavior
+## 行為
 
-- **On stream start** — records the start time using a monotonic clock
-  (immune to system clock drift / NTP adjustments).
-- **Every 30 seconds** — checks stream uptime; when uptime ≥ threshold,
-  starts a local recording via `obs_frontend_recording_start()`.
-  - If a recording is *already* running (e.g. you record locally from t=0),
-    the script leaves it alone.
-- **If you stop the recording manually** mid-overflow, the script respects
-  that and will not restart it for the rest of the stream.
-- **On stream stop** — if the script started the recording, it stops it.
-  If you started it manually, it's left alone.
-- **Crash / reload recovery** — start time is persisted to a small JSON
-  file next to the script (`overflow_recorder_state.json`). On reload, if
-  OBS reports the stream still active, the script picks up where it left
-  off. If OBS is not streaming, the stale file is discarded.
+- **直播開始時** — 使用單調時鐘（monotonic clock）記錄起始時間，可免疫系統時鐘漂移與 NTP 校時。
+- **每 30 秒** — 檢查直播進行時間；當進行時間 ≥ 閾值，透過 `obs_frontend_recording_start()` 開始本機錄影。
+  - 如果你本來就已經在錄影（例如從 t=0 就開始本機錄），腳本不會去動它。
+- **如果你在 overflow 錄影期間手動停止錄影** — 腳本會尊重你的動作，該次直播剩餘時間內不會再自動啟動錄影。
+- **直播停止時** — 如果錄影是腳本啟動的，腳本會停止錄影。如果是你自己啟動的，則不動。
+- **當機／重新載入復原** — 起始時間會以小型 JSON 檔保存在腳本旁邊（`overflow_recorder_state.json`）。重新載入時，若 OBS 表示直播仍在進行，腳本會接續原狀態；若 OBS 顯示未在直播，過時的狀態檔會被丟棄。
 
-## Testing
+## 測試
 
-Don't wait 12 hours to test this. End-to-end test in ~2 minutes:
+不要傻等 12 小時。完整測試只需約 2 分鐘：
 
-1. Set **Threshold (minutes)** to `1`.
-2. Start streaming (you can use a throwaway RTMP target if you don't
-   want to actually broadcast — e.g. stream to `rtmp://localhost/live`
-   with no server running; OBS will still fire the start event).
-3. Watch the **Script Log** — you should see:
+1. 把 **Threshold (minutes)** 設為 `1`。
+2. 開始直播（你可以用一個丟棄用的 RTMP 目標，例如 `rtmp://localhost/live`，這樣不會真的播出去；OBS 仍會送出直播開始事件）。
+3. 觀察 **Script Log**，應該會看到：
    - `Stream started. Threshold at +1m0s (wall clock ~HH:MM:SS).`
-   - ~60s later: `Threshold reached after 1m0s; started overflow recording.`
-   - OBS's recording indicator lights up.
-4. Stop the stream. You should see:
+   - 約 60 秒後：`Threshold reached after 1m0s; started overflow recording.`
+   - OBS 的錄影指示燈亮起。
+4. 停止直播，應該會看到：
    - `Stream stopped; stopping overflow recording.`
-5. Reset **Threshold (minutes)** to `715` for real use.
+5. 真正使用時，把 **Threshold (minutes)** 改回 `715`。
 
-Also worth testing once: while the script is recording, hit OBS's
-**Stop Recording** button manually. The log should show
-`Overflow recording stopped by user; respecting and will not restart`
-and the script should leave recording off for the rest of that stream.
+建議也測一次：當腳本正在錄影時，手動按 OBS 的 **停止錄影** 按鈕。Log 應顯示 `Overflow recording stopped by user; respecting and will not restart`，且腳本在該次直播剩餘時間內不會再啟動錄影。
 
-## Troubleshooting
+## 疑難排解
 
-**Where is the script log?**
-**Tools → Scripts → Script Log** button (not a tab — a button at the
-bottom of the Scripts window).
+**Script log 在哪？**
+**工具 → 指令碼（Scripts）→ Script Log** 按鈕（不是分頁，是指令碼視窗下方的按鈕）。
 
-**The recording didn't start at the threshold.**
-Open the script log and look for `FAILED to start overflow recording` or
-`ERROR: unhandled exception`. The most common cause is OBS's recording
-output being misconfigured (bad output path, no encoder selected). Fix
-that in **Settings → Output → Recording**.
+**到了閾值卻沒開始錄影。**
+打開 script log，找 `FAILED to start overflow recording` 或 `ERROR: unhandled exception`。最常見原因是 OBS 的錄影輸出設定錯誤（輸出路徑錯、未選編碼器）。請到 **設定 → 輸出 → 錄影** 修正。
 
-**The script didn't survive an OBS restart mid-stream.**
-Check the log on next launch for
-`Recovered state across reload` or `State file's start time is in the future`.
-The latter means the machine rebooted (monotonic clock reset) — the script
-gives up rather than guessing wrong.
+**OBS 直播中途重啟後，腳本沒接續。**
+下次啟動時查看 log 中的 `Recovered state across reload` 或 `State file's start time is in the future`。後者代表機器重開過（單調時鐘歸零），腳本會選擇放棄而不是亂猜。
 
-## Platform support
+## 平台支援
 
-- **macOS**: tested on macOS 26 (Darwin 25.5.0) with OBS 30+ and
-  Python 3.11 via Homebrew.
-- **Windows / Linux**: not yet verified by the author. The script uses
-  only cross-platform OBS Python APIs (`obspython`), so it *should* work.
-  If you hit issues, please file them at
-  https://github.com/gordonxc/obs-recorder/issues.
+- **macOS**：已在 macOS 26（Darwin 25.5.0）、OBS 30+ 與 Homebrew 安裝的 Python 3.11 上測試。
+- **Windows / Linux**：作者尚未親自驗證。腳本只使用跨平台的 OBS Python API（`obspython`），理論上可運作；若遇到問題請至
+  https://github.com/gordonxc/obs-recorder/issues 回報。
 
-## License
+## 授權
 
-MIT — see [LICENSE](LICENSE).
+MIT — 詳見 [LICENSE](LICENSE)。
